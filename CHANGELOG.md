@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-31
+
 ### Added
 
 - `AttestoMCP.Plug.ProtectResource`: a single plug composing
@@ -24,11 +26,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `guides/mcp_wiring.md`: copy-pasteable end-to-end wiring guide.
 - `phoenix` as an optional dependency (only needed by `AttestoMCP.Router` and
   `AttestoMCP.MetadataController`).
-
-## [0.1.0] - 2026-05-31
-
-### Added
-
 - Initial Plug/Phoenix authentication wrapper for protecting HTTP MCP endpoints
   with Attesto access-token verification, DPoP proof checks, and mTLS
   certificate-bound token checks.

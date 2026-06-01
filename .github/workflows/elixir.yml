@@ -59,6 +59,9 @@ jobs:
           mix local.rebar --force
           mix deps.get
 
+      - name: Install Phoenix installer archive
+        run: mix archive.install hex phx_new --force
+
       - name: Compile (warnings as errors)
         run: mix compile --warnings-as-errors
 

@@ -60,12 +60,10 @@ is a normal Plug boundary.
 
 ## Installation
 
-The package is prepared for Hex but has not been published yet.
-
 ```elixir
 def deps do
   [
-    {:attesto_mcp, "~> 0.1.0"}
+    {:attesto_mcp, "~> 0.5"}
   ]
 end
 ```

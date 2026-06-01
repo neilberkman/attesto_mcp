@@ -6,6 +6,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-05-31
+
+### Fixed
+
+- Correct the README installation snippet now that the package is published on
+  Hex.
+
 ## [0.5.1] - 2026-05-31
 
 ### Changed

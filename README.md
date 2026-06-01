@@ -68,6 +68,15 @@ def deps do
 end
 ```
 
+For Phoenix apps, the optional Igniter installer can scaffold the protected
+resource metadata route and protecting pipeline:
+
+```bash
+mix attesto_mcp.install --resource-path /mcp --scopes mcp:tools:call
+```
+
+For a fuller Phoenix wiring example, see [the MCP wiring guide](guides/mcp_wiring.md).
+
 ## Minimal Plug/Phoenix usage
 
 Protect the mounted MCP endpoint before forwarding to whichever MCP server plug
@@ -116,8 +125,9 @@ authenticated, or `nil` when no certificate was presented.
 
 ## Metadata
 
-Serve protected-resource metadata from the well-known location derived from your
-MCP resource identifier:
+The installer mounts the standard metadata routes for a resource path. When
+building metadata directly, serve protected-resource metadata from the
+well-known location derived from your MCP resource identifier:
 
 ```elixir
 metadata =

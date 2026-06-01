@@ -3,7 +3,9 @@ defmodule AttestoMCP.MixProject do
   use Mix.Project
 
   alias AttestoMCP.Plug.Authenticate
+  alias AttestoMCP.Plug.ProtectResource
   alias AttestoMCP.Plug.RequireScopes
+  alias AttestoMCP.Test.DPoPAssertions
   alias AttestoMCP.Test.DPoPReplay
 
   @version "0.1.0"
@@ -44,6 +46,16 @@ defmodule AttestoMCP.MixProject do
       {:attesto, "~> 0.6"},
       {:plug, "~> 1.16"},
 
+      # Optional: only needed by AttestoMCP.Router and AttestoMCP.MetadataController.
+      # Plug-only consumers (and the Authenticate/RequireScopes/ProtectResource
+      # plugs) do not require it. Phoenix apps already depend on it directly.
+      {:phoenix, "~> 1.7", optional: true},
+
+      # Optional: only needed by the `mix attesto_mcp.install` Igniter task.
+      # Library consumers never call the installer at runtime, so the dependency
+      # stays out of their closure unless they opt into the codegen tooling.
+      {:igniter, "~> 0.5", optional: true},
+
       # dev / quality
       {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
@@ -73,17 +85,19 @@ defmodule AttestoMCP.MixProject do
       main: "readme",
       source_ref: "v#{@version}",
       source_url: @url,
-      extras: ["README.md", "CHANGELOG.md", "LICENSE"],
+      extras: ["README.md", "guides/mcp_wiring.md", "CHANGELOG.md", "LICENSE"],
       groups_for_extras: [
+        Guides: ~r/guides\/.?/,
         Changelog: ~r/CHANGELOG\.md/,
         License: ~r/LICENSE/
       ],
       groups_for_modules: [
         Setup: [AttestoMCP],
-        Plugs: [Authenticate, RequireScopes],
+        Plugs: [Authenticate, RequireScopes, ProtectResource],
+        Routing: [AttestoMCP.Router, AttestoMCP.MetadataController],
         Metadata: [AttestoMCP.Metadata],
         Scopes: [AttestoMCP.Scopes],
-        Testing: [DPoPReplay]
+        Testing: [DPoPReplay, DPoPAssertions]
       ]
     ]
   end
@@ -96,7 +110,7 @@ defmodule AttestoMCP.MixProject do
         "Changelog" => "https://hexdocs.pm/attesto_mcp/changelog.html",
         "GitHub" => @url
       },
-      files: ~w(lib LICENSE mix.exs README.md CHANGELOG.md)
+      files: ~w(lib guides LICENSE mix.exs README.md CHANGELOG.md)
     ]
   end
 end

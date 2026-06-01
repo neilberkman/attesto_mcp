@@ -6,6 +6,25 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- `AttestoMCP.Plug.ProtectResource`: a single plug composing
+  `AttestoMCP.Plug.Authenticate` then `AttestoMCP.Plug.RequireScopes` into a
+  correctly ordered, halt-respecting pipeline, with the RFC 9728
+  `resource_metadata` `WWW-Authenticate` challenge auto-wired from the resource
+  path.
+- `AttestoMCP.Router` with the `attesto_mcp_protected_resource_metadata/2`
+  Phoenix router macro, and `AttestoMCP.MetadataController`, serving
+  per-resource `/.well-known/oauth-protected-resource/<path>` metadata plus a
+  backwards-compatible root `/.well-known/oauth-protected-resource` route. The
+  served `resource` identifier matches the `ProtectResource` challenge.
+- `AttestoMCP.Test.DPoPAssertions`: shipped ExUnit assertions for host apps
+  proving a DPoP-bound token presented as a plain Bearer is rejected and is
+  accepted with a valid DPoP proof.
+- `guides/mcp_wiring.md`: copy-pasteable end-to-end wiring guide.
+- `phoenix` as an optional dependency (only needed by `AttestoMCP.Router` and
+  `AttestoMCP.MetadataController`).
+
 ## [0.1.0] - 2026-05-31
 
 ### Added

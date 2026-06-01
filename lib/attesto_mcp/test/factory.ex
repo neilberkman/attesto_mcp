@@ -5,8 +5,8 @@ if Code.ensure_loaded?(ExUnit.Callbacks) do
 
     This factory mints access tokens and DPoP proofs for host application test
     suites, including the shipped `AttestoMCP.Test.DPoPAssertions` helpers. It is
-    built entirely on Attesto's published API (`Attesto.Token.mint/3`,
-    `Attesto.DPoP.compute_ath/1`, `Attesto.PrincipalKind.new/3`,
+    built entirely on Attesto's published API (`Attesto.Test.DPoP`,
+    `Attesto.Token.mint/3`, `Attesto.PrincipalKind.new/3`,
     `Attesto.Config.new/1`, `Attesto.Keystore.Static`) plus JOSE, so it has no
     dependency on any Attesto-internal test scaffolding.
 
@@ -25,6 +25,7 @@ if Code.ensure_loaded?(ExUnit.Callbacks) do
     """
 
     alias Attesto.Keystore.Static
+    alias Attesto.Test.DPoP, as: TestDPoP
     alias Attesto.Token
 
     @issuer "https://auth.example.com"
@@ -93,30 +94,24 @@ if Code.ensure_loaded?(ExUnit.Callbacks) do
     """
     @spec dpop_proof(String.t(), keyword()) :: {String.t(), String.t()}
     def dpop_proof(access_token, opts \\ []) do
-      jwk = Keyword.get_lazy(opts, :jwk, fn -> JOSE.JWK.generate_key({:ec, "P-256"}) end)
-      {_, public_map} = JOSE.JWK.to_public_map(jwk)
+      jwk = Keyword.get_lazy(opts, :jwk, &TestDPoP.generate_key/0)
 
-      header = %{
-        "alg" => "ES256",
-        "jwk" => public_map,
-        "typ" => "dpop+jwt"
-      }
+      proof =
+        TestDPoP.proof(
+          jwk,
+          Keyword.get(opts, :htm, "POST"),
+          Keyword.get(opts, :htu, @audience),
+          access_token: access_token,
+          now: Keyword.get_lazy(opts, :now, &DateTime.utc_now/0),
+          jti: Keyword.get_lazy(opts, :jti, fn -> "proof-" <> Integer.to_string(System.unique_integer([:positive])) end)
+        )
 
-      payload = %{
-        "ath" => Attesto.DPoP.compute_ath(access_token),
-        "htm" => Keyword.get(opts, :htm, "POST"),
-        "htu" => Keyword.get(opts, :htu, @audience),
-        "iat" => System.system_time(:second),
-        "jti" => "proof-" <> Integer.to_string(System.unique_integer([:positive]))
-      }
-
-      {_protected, proof} = jwk |> JOSE.JWT.sign(header, payload) |> JOSE.JWS.compact()
-      {proof, JOSE.JWK.thumbprint(jwk)}
+      {proof, Attesto.DPoP.compute_jkt(JOSE.JWK.to_public(jwk))}
     end
 
     @doc "Generate a fresh P-256 JWK for use as a DPoP proof key."
     @spec dpop_jwk() :: JOSE.JWK.t()
-    def dpop_jwk, do: JOSE.JWK.generate_key({:ec, "P-256"})
+    def dpop_jwk, do: TestDPoP.generate_key()
 
     @doc "Build a self-signed certificate (DER) for exercising mTLS sender constraints."
     @spec self_signed_cert_der() :: binary()

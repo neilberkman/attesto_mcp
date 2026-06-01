@@ -6,6 +6,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-05-31
+
+### Changed
+
+- Reuse `Attesto.Test.DPoP` for MCP DPoP proof fixtures so downstream MCP tests
+  stay aligned with Attesto's published DPoP helper API.
+
 ## [0.5.0] - 2026-05-31
 
 ### Added
